@@ -28,8 +28,8 @@ class Main:
             self.table_actu = carte_jouer
         else:
             self.table_actu = table
-            print("Vous n'avez pas de carte possible à jouer.")
-            print("Vous piochez donc une carte")
+            print("Vous n'avez pas la possibilité de jouer une carte")
+            print("Vous piochez donc une carte.")
             nouvelle_carte = random.choice(total_cartes)
             print(f"Carte piocher : {nouvelle_carte}")
             self.main.append(nouvelle_carte) 
@@ -71,16 +71,34 @@ class Jeu:
     
     def run(self):
         while len(self.J1.main) > 0 and len(self.J2.main) > 0:
-            #clear()
+            clear()
+
+            ##### Tour J1 #####
+            print(f"Table : {self.table} \n")
             print(f"{self.J1.pseudo}, c'est à vous de jouer. Voici vos cartes :")
             print(self.J1.main)
-            print(f"La carte actuelement sur la table : {self.table}")
             self.J1.choix([self.table.couleur, self.table.numero])
             self.table.couleur = self.J1.table_actu[0]
             self.table.numero = self.J1.table_actu[1]
-            print(self.table.numero)
-            input("Continuer ?")
+            input("Taper Entrée pour passer au joueur suviant...")
+            clear()
 
+            ##### Tour J2 #####
+            print(f"Table : {self.table} \n")
+            print(f"{self.J2.pseudo}, c'est à vous de jouer. Voici vos cartes :")
+            print(self.J2.main)
+            self.J2.choix([self.table.couleur, self.table.numero])
+            self.table.couleur = self.J2.table_actu[0]
+            self.table.numero = self.J2.table_actu[1]
+            input("Taper Entrée pour passer au joueur suviant...")
+        
+        clear()
+        if len(self.J1.main) == 0:
+            print(f"Bravo {self.J1.pseudo}, vous avez gagner !")
+        elif len(self.J2.main) == 0:
+            print(f"Bravo {self.J2.pseudo}, vous avez gagner !")
+        else:
+            print("Bug :(")
 
 
 def clear():
