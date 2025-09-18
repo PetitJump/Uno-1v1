@@ -2,7 +2,7 @@ import json, os, random
 from random import sample
 
 class Table:
-    def __init__(self, couleur, numero):
+    def __init__(self, couleur: str, numero: int):
         self.couleur = couleur
         self.numero = numero
 
@@ -10,7 +10,7 @@ class Table:
         return f"[{self.couleur}, {self.numero}]"
 
 class Main:
-    def __init__(self, main, pseudo):
+    def __init__(self, main: list, pseudo: str):
         self.main = main
         self.pseudo = pseudo
         self.table_actu = ["couleur", 0]
@@ -34,7 +34,7 @@ class Main:
             print(f"Carte piocher : {nouvelle_carte}")
             self.main.append(nouvelle_carte) 
 
-    def cartes_posables(self, main, table):
+    def cartes_posables(self, main: list, table: list):
         rendu = []
         for c in main:
             if c[0] == table[0] or c[1] == table[1]:
@@ -47,62 +47,45 @@ class Jeu:
         self.table = sample(total_cartes, k=1)[0]
         self.table = Table(self.table[0], self.table[1] )
 
-        main_actuel1 = sample(total_cartes, k=7)
+        total_joueur = int(input("Combien de joueurs vont jouer ? : "))
+        self.joueur = []
+        for i in range(total_joueur):
+            clear()
+            pseudo = input(f"Pseudo {i+1} : ")
+            self.joueur.append(Main(sample(total_cartes, k=7), pseudo))
 
-        main_actuel2 = sample(total_cartes, k=7)
 
-        print("Bienvenue au Uno")
-        pseudo1 = input("Choix pseudo 1 : ")
-        clear()
-        print("Bienvenue au Uno")
-        pseudo2 = input("Choix pseudo 2 : ")
-        clear()
-        print(f"{pseudo1}, voici vos cartes :")
-        print(main_actuel1)
-        input("Appuyer sur entré pour continuer")
-        clear()
-        print(f"{pseudo2}, voici vos cartes")
-        print(main_actuel2)
-        input("Appuyer sur entré pour continuer")
-
-        self.J1 = Main(main_actuel1, pseudo1)
-        self.J2 = Main(main_actuel2, pseudo2)
-
+        for k in self.joueur:
+            print(f"{k.pseudo} voici vos cartes : \n{k.main}")
     
+    def joueur_vivant(self):
+        for k in self.joueur:
+            if len(k.main) == 0:
+                return False
+        return True
+
     def run(self):
-        while len(self.J1.main) > 0 and len(self.J2.main) > 0:
-            clear()
+        while self.joueur_vivant() == True:
+            for k in self.joueur:
+                if len(k.main) == 0:
+                    break
+                clear()
+                print(f"Table : {self.table} \n")
+                print(f"{k.pseudo}, c'est à vous de jouer. Voici vos cartes :")
+                print(k.main)
+                k.choix([self.table.couleur, self.table.numero])
+                self.table.couleur = k.table_actu[0]
+                self.table.numero = k.table_actu[1]
+                input("Taper Entrée pour passer au joueur suviant...")
 
-            ##### Tour J1 #####
-            print(f"Table : {self.table} \n")
-            print(f"{self.J1.pseudo}, c'est à vous de jouer. Voici vos cartes :")
-            print(self.J1.main)
-            self.J1.choix([self.table.couleur, self.table.numero])
-            self.table.couleur = self.J1.table_actu[0]
-            self.table.numero = self.J1.table_actu[1]
-            input("Taper Entrée pour passer au joueur suviant...")
-            clear()
-
-            ##### Tour J2 #####
-            print(f"Table : {self.table} \n")
-            print(f"{self.J2.pseudo}, c'est à vous de jouer. Voici vos cartes :")
-            print(self.J2.main)
-            self.J2.choix([self.table.couleur, self.table.numero])
-            self.table.couleur = self.J2.table_actu[0]
-            self.table.numero = self.J2.table_actu[1]
-            input("Taper Entrée pour passer au joueur suviant...")
-        
         clear()
-        if len(self.J1.main) == 0:
-            print(f"Bravo {self.J1.pseudo}, vous avez gagner !")
-        elif len(self.J2.main) == 0:
-            print(f"Bravo {self.J2.pseudo}, vous avez gagner !")
-        else:
-            print("Bug :(")
+        for k in self.joueur:
+            if len(k.main) == 0:
+                print(f"Bravo {k.pseudo} vous avez gagner !")
 
 
 def clear():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system('cls' if os.name == 'nt' else 'clear') #Cleat le terminal
 
 with open('data.json', 'r', encoding='utf-8') as f:
     total_cartes = json.load(f)
